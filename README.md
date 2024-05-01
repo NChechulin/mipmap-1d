@@ -1,5 +1,13 @@
 # MipMap-1d
 
+[![Crates.io][crates-badge]][crates-url]
+[![MIT licensed][mit-badge]][mit-url]
+
+[crates-badge]: https://img.shields.io/crates/v/mipmap-1d.svg
+[crates-url]: https://crates.io/crates/mipmap-1d
+[mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[mit-url]: https://github.com/NChechulin/mipmap-1d/blob/master/LICENSE
+
 This Rust crate provides a small data structure that constructs and holds your 1-dimensional mipmaps.
 MipMaps are just downsampled versions of your vector.
 Each level is only half the size of a previous level.
