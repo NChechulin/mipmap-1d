@@ -44,3 +44,5 @@ assert_eq!(mipmap.get_level(4), None);
 
 Currently, the only idea for improvement is to introduce new averaging methods that are used in signal processing.
 Check [issue #1](https://github.com/NChechulin/mipmap-1d/issues/1) for details.
+
+Special thanks to @mkalte666 for providing initial inspiration to make this crate.
