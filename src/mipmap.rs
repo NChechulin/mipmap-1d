@@ -1,11 +1,26 @@
 use num_traits::{FromPrimitive, Num, ToPrimitive};
 
+/// Creates several downsampled versions of given vector.
+/// This data structure takes 2x space of original data.
+/// Example:
+/// ```rust
+/// use mipmap_1d::MipMap1D;
+/// 
+/// let data = vec![2, 4, 6, 8, 9];
+/// let mipmap = MipMap1D::new(data);
+/// assert_eq!(mipmap.num_levels(), 4);
+/// assert_eq!(*mipmap.get_level(0).unwrap(), [2, 4, 6, 8, 9]);
+/// assert_eq!(*mipmap.get_level(1).unwrap(), [3, 7, 9]);
+/// assert_eq!(*mipmap.get_level(2).unwrap(), [5, 9]);
+/// assert_eq!(*mipmap.get_level(3).unwrap(), [7]);
+/// assert_eq!(mipmap.get_level(4), None);
+/// ```
 pub struct MipMap1D<T: Num + ToPrimitive + FromPrimitive> {
     data: Vec<Vec<T>>,
 }
 
 impl<T: Num + ToPrimitive + FromPrimitive + Copy> MipMap1D<T> {
-    pub fn build(source: Vec<T>) -> Self {
+    pub fn new(source: Vec<T>) -> Self {
         let mut data = vec![source.clone()];
         let mut current = source;
 
@@ -18,19 +33,24 @@ impl<T: Num + ToPrimitive + FromPrimitive + Copy> MipMap1D<T> {
         Self { data }
     }
 
+    /// Returns the total number of downsampled levels.
+    /// Equal to `ceil(log2(source.len())`
     pub fn num_levels(&self) -> usize {
         self.data.len()
     }
 
+    /// Returns the data on given level.
+    /// Level `0` returns the source data; the higher the level, the higher the compression (i.e. smaller vectors are returned).
+    /// If the level is out of bounds, returns None
     pub fn get_level(&self, level: usize) -> Option<&Vec<T>> {
-        if level > self.num_levels() {
+        if level >= self.num_levels() {
             return None;
         }
 
         Some(&self.data[level])
     }
 
-    /// Downsamples a vector to ceil(len / 2) elements.
+    /// Downsamples a vector to `ceil(len / 2)`` elements.
     /// Currently, downsampling is done by averaging the pair of elements
     fn downsample(source: &[T]) -> Vec<T> {
         source
@@ -64,7 +84,7 @@ mod tests {
     fn test_uneven_mipmap() {
         let data = vec![2, 4, 6, 8, 9];
         let target = vec![vec![2, 4, 6, 8, 9], vec![3, 7, 9], vec![5, 9], vec![7]];
-        let mipmap = MipMap1D::build(data);
+        let mipmap = MipMap1D::new(data);
         assert_eq!(mipmap.data, target);
     }
 
@@ -72,7 +92,7 @@ mod tests {
     fn test_mipmap_levels() {
         let data = vec![2, 4, 6, 8, 9];
         let target = [vec![2, 4, 6, 8, 9], vec![3, 7, 9], vec![5, 9], vec![7]];
-        let mipmap = MipMap1D::build(data);
+        let mipmap = MipMap1D::new(data);
 
         assert_eq!(mipmap.num_levels(), target.len());
         for (level, target_item) in target.iter().enumerate() {
@@ -82,5 +102,13 @@ mod tests {
 
             assert_eq!(*res, *target_item)
         }
+    }
+
+    #[test]
+    fn test_fails_on_nonexistent_level() {
+        let data = vec![2, 4, 6, 8, 9];
+        let mipmap = MipMap1D::new(data);
+
+        assert_eq!(mipmap.get_level(mipmap.num_levels()), None);
     }
 }

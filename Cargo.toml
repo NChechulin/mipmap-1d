@@ -1,5 +1,6 @@
 [package]
 name = "mipmap-1d"
+description = "A small data structure to perform 1d-mipmapping (downsampling)"
 version = "0.1.0"
 edition = "2021"
 
