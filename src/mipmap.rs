@@ -5,7 +5,7 @@ use num_traits::{FromPrimitive, Num, ToPrimitive};
 /// Example:
 /// ```rust
 /// use mipmap_1d::MipMap1D;
-/// 
+///
 /// let data = vec![2, 4, 6, 8, 9];
 /// let mipmap = MipMap1D::new(data);
 /// assert_eq!(mipmap.num_levels(), 4);
@@ -15,6 +15,7 @@ use num_traits::{FromPrimitive, Num, ToPrimitive};
 /// assert_eq!(*mipmap.get_level(3).unwrap(), [7]);
 /// assert_eq!(mipmap.get_level(4), None);
 /// ```
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct MipMap1D<T: Num + ToPrimitive + FromPrimitive> {
     data: Vec<Vec<T>>,
 }
